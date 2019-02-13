@@ -5,7 +5,7 @@ Facebook, between a next.js frontend and a Sanity backend.
 
 ## Usage
 
-```
+```bash
 cd api/
 npm run start
 
