@@ -4,8 +4,8 @@
     "name": "next-sanity-facebook-auth"
   },
   "api": {
-    "projectId": "okmnxtw8",
-    "dataset": "production"
+    "projectId": "waprraos",
+    "dataset": "auth-sample"
   },
   "plugins": [
     "@sanity/base",
