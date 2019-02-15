@@ -11,7 +11,8 @@ export default {
     {
       name: 'note',
       title: 'Secret Note',
-      type: 'string'
+      type: 'reference',
+      to: { type: 'note' }
     }
   ]
 }
