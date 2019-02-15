@@ -7,8 +7,11 @@ Facebook, between a next.js frontend and a Sanity backend.
 
 ```bash
 cd api/
-npm run start
+npm run dev
 
 cd ../www/
+npm run dev
+
+cd ../auth/
 npm run dev
 ```
