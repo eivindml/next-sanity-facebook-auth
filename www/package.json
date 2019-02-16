@@ -2,9 +2,9 @@
   "name": "next-sanity-facebook-auth",
   "version": "1.0.0",
   "scripts": {
-    "dev": "node server.js",
+    "dev": "nodemon server/index.js",
     "build": "next build",
-    "start": "next start"
+    "start": "NODE_ENV=production node server/index.js"
   },
   "dependencies": {
     "@sanity/client": "^0.140.8",
@@ -16,6 +16,7 @@
     "react-dom": "^16.8.1"
   },
   "devDependencies": {
-    "http-proxy": "^1.17.0"
+    "http-proxy": "^1.17.0",
+    "nodemon": "^1.18.10"
   }
 }
