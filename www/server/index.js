@@ -24,17 +24,10 @@ app.prepare()
         case '/login':
           app.render(req, res, '/login', query)
           break
-        case '/api/login.js':
+        case '/auth/login.js':
           proxy.web(req, res, { target: 'http://localhost:3001' }, error =>
             console.log('Error!', error)
           )
-          break
-        case '/profile':
-          app.render(req, res, '/profile', query)
-          break
-        case '/api/profile.js':
-          proxy.web(req, res, { target: 'http://localhost:3001' }, error =>
-            console.log('Error!', error))
           break
         default:
           handle(req, res, parsedUrl)
