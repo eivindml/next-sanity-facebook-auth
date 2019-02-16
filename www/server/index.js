@@ -4,6 +4,8 @@ const httpProxy = require('http-proxy')
 const { createServer } = require('http')
 
 // TODO: Go through this and clean up and understand
+// TODO: Can we use micro instead of http?
+// TODO: What does a proxy do?
 
 const app = next({ dev: process.env.NODE_ENV !== 'production' })
 const handle = app.getRequestHandler()
