@@ -1,10 +1,18 @@
 import React from 'react'
-import cookies from 'next-cookies'
 import Router from 'next/router'
+import cookies from 'next-cookies'
+import sanity from '@sanity/client'
+
+// TODO: Remove console logs
+// TODO: Fix unhandled promise rejection error
+// TODO: Clean up .env files and create examples, and remove all hardcoded variables
+// TODO: Refactor into functions etc
 
 export default class extends React.Component {
   static async getInitialProps (ctx) {
     const { token } = cookies(ctx)
+
+    console.log('token ' + token)
 
     if (!token) {
       // Empty object means token is not present in cookie,
@@ -17,12 +25,37 @@ export default class extends React.Component {
       }
     } else {
       // Token is present, and we can make API call with token.
-      return { token: token }
+      const query = `*[_type == 'user'] {
+        username,
+        _id
+      }
+      `
+      const s = sanity({
+        projectId: process.env.SANITY_PROJECT_ID,
+        dataset: process.env.SANITY_DATASET,
+        useCdn: false,
+        token: token
+      })
+
+      const re = await s.fetch(query)
+
+      return { token: token, users: re }
     }
   }
   render () {
     return (
-      <div>This is authenticated content. Token: {this.props.token}</div>
+      <div>
+        This is authenticated content. Token: {this.props.token}
+        {this.props.users &&
+          <div>
+            {this.props.users.map((user, key) =>
+              <div key={key}>
+                {user.username}
+              </div>
+            )}
+          </div>
+        }
+      </div>
     )
   }
 }
