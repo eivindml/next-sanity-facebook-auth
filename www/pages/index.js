@@ -3,16 +3,12 @@ import Router from 'next/router'
 import cookies from 'next-cookies'
 import sanity from '@sanity/client'
 
-// TODO: Remove console logs
 // TODO: Fix unhandled promise rejection error
-// TODO: Clean up .env files and create examples, and remove all hardcoded variables
 // TODO: Refactor into functions etc
 
 export default class extends React.Component {
   static async getInitialProps (ctx) {
     const { token } = cookies(ctx)
-
-    console.log('token ' + token)
 
     if (!token) {
       // Empty object means token is not present in cookie,
