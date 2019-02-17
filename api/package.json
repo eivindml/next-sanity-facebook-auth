@@ -1,19 +1,13 @@
 {
   "name": "nextsanityfacebookauth",
-  "private": true,
   "version": "1.0.0",
-  "description": "",
+  "private": true,
   "main": "package.json",
-  "author": "Eivind Lindbråten <eivindml@icloud.com>",
-  "license": "UNLICENSED",
   "scripts": {
     "dev": "sanity start",
     "start": "sanity start",
     "test": "sanity check"
   },
-  "keywords": [
-    "sanity"
-  ],
   "dependencies": {
     "@sanity/base": "^0.140.8",
     "@sanity/components": "^0.140.8",
@@ -24,6 +18,5 @@
     "prop-types": "^15.6",
     "react": "^16.2",
     "react-dom": "^16.2"
-  },
-  "devDependencies": {}
+  }
 }
