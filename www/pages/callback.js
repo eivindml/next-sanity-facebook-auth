@@ -12,11 +12,9 @@ export default class extends React.Component {
       body: JSON.stringify({ code })
     })
     if (response.ok) {
-      const { token, image } = await response.json()
-      console.log('Login success.')
-      return { token, image }
+      const { token, image, expire } = await response.json()
+      return { token, image, expire }
     } else {
-      console.log('Login failed.')
       // // https://github.com/developit/unfetch#caveats
       // let error = new Error(response.statusText)
       // error.response = response
@@ -25,11 +23,9 @@ export default class extends React.Component {
     }
   }
   componentDidMount () {
-    // login({ token })
-    // TODO: Set token here, and redirect to index.
-    // We need to set the cookie client side.
     // TODO: Maybe better to set cookie on elsewhere
-    cookie.set('token', this.props.token/* , { expires: 100 } */)
+    const expires = new Date(this.props.expire)
+    cookie.set('token', this.props.token, { expires })
     Router.push('/')
   }
   render () {
