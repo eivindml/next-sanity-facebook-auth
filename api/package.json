@@ -1,5 +1,5 @@
 {
-  "name": "nextsanityfacebookauth",
+  "name": "next-sanity-facebook-auth-api",
   "version": "1.0.0",
   "private": true,
   "main": "package.json",
@@ -15,6 +15,7 @@
     "@sanity/default-layout": "^0.140.8",
     "@sanity/default-login": "^0.140.3",
     "@sanity/desk-tool": "^0.140.8",
+    "dotenv": "^6.2.0",
     "prop-types": "^15.6",
     "react": "^16.2",
     "react-dom": "^16.2"

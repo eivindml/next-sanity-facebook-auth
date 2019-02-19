@@ -1,46 +1,66 @@
 require('dotenv').config()
-const { send, run, json, createError } = require('micro')
+
 const fetch = require('isomorphic-unfetch')
 const sanity = require('@sanity/client')
+const { send, run, json } = require('micro')
 
+// Log in the user by using the Facebook `code`
+// recieved from client side to:
+// 1. get Facebook access token,
+// 2. get Facebook profile using access token,
+// 3. create expiration date for token,
+// 4. generate sanity session, and return token.
 const login = async (req, res) => {
-  // TODO: Return values explicty and infer them
+  const now = new Date()
   const { code } = await json(req)
-  const facebook = await getFacebookToken(code)
-  const profile = await getFacebookProfile(facebook.access_token)
 
-  const expires = new Date()
-  expires.setSeconds(expires.getSeconds() + facebook.expires_in)
+  // Get Facebook token and profile data
+  const { 'access_token': accessToken, 'expires_in': expiresIn } = await getFacebookToken(code)
+  const { id, name } = await getFacebookProfile(accessToken)
 
-  const sanityUser = await getSanityUser(profile.id, profile.name, expires.toISOString())
+  // Create expiration date for tokens.
+  // So Facebook token, Sanity token and
+  // browser cookie have same expiration date.
+  now.setSeconds(now.getSeconds() + expiresIn)
+  const expires = now.toISOString()
 
-  await createUser(sanityUser.token, profile.id, profile.name)
+  // Generate sanity session token and create user in database
+  const { token } = await generateSanitySession(id, name, expires)
+  await createUserIfNotExists(token, id, name)
 
-  send(res, 200, {
-    token: sanityUser.token,
-    image: profile.picture.data.url,
-    expire: expires.toISOString()
-  })
+  send(res, 200, { token, expires })
 }
 
+// Get Facebook token
 const getFacebookToken = async (code) => {
-  const FACEBOOK_REDIRECT_URI = 'http://localhost:3000/callback'
-  const url = `https://graph.facebook.com/v3.2/oauth/access_token?client_id=${process.env.FACEBOOK_APP_ID}&redirect_uri=${FACEBOOK_REDIRECT_URI}&client_secret=${process.env.FACEBOOK_CLIENT_SECRET}&code=${code}`
-  try {
-    const response = await fetch(url)
-    return response.json()
-  } catch (error) {
-    throw createError(error.statusCode, error.statusText)
-  }
-}
+  const url = `https://graph.facebook.com\
+/v3.2/oauth/access_token\
+?client_id=${process.env.FACEBOOK_APP_ID}\
+&redirect_uri=${process.env.FACEBOOK_REDIRECT_URI}\
+&client_secret=${process.env.FACEBOOK_CLIENT_SECRET}\
+&code=${code}`
 
-const getFacebookProfile = async (token) => {
-  const response = await fetch(`https://graph.facebook.com/me?fields=id,name,picture.width(512)&access_token=${token}`)
+  const response = await fetch(url)
   return response.json()
 }
 
-const getSanityUser = async (id, name, expires) => {
-  const response = await fetch(`https://${process.env.SANITY_PROJECT_ID}.api.sanity.io/v1/auth/thirdParty/session`, {
+// Get Facebook profile data
+const getFacebookProfile = async (token) => {
+  const url = `https://graph.facebook.com\
+/me\
+?fields=id,name,picture.width(512)\
+&access_token=${token}`
+
+  const response = await fetch(url)
+  return response.json()
+}
+
+// Generates Sanity session token
+const generateSanitySession = async (id, name, expires) => {
+  const url = `https://${process.env.SANITY_PROJECT_ID}.api.sanity.io\
+/v1/auth/thirdParty/session`
+
+  const options = {
     method: 'post',
     headers: {
       'Authorization': `Bearer ${process.env.SANITY_TOKEN_CREATE_SESSION}`,
@@ -51,24 +71,26 @@ const getSanityUser = async (id, name, expires) => {
       userFullName: name,
       sessionExpires: expires
     })
-  })
+  }
+
+  const response = await fetch(url, options)
   return response.json()
 }
 
-const createUser = async (token, id, name) => {
+// Creates user in Sanity database
+const createUserIfNotExists = async (token, id, name) => {
   const client = sanity({
     projectId: process.env.SANITY_PROJECT_ID,
     dataset: process.env.SANITY_DATASET,
     token: token
   })
 
-  const doc = {
+  const document = {
     _type: 'user',
     _id: `e-${id}`,
-    username: name
+    name: name
   }
-
-  return client.createIfNotExists(doc)
+  return client.createIfNotExists(document)
 }
 
 module.exports = (req, res) => run(req, res, login)

@@ -4,15 +4,9 @@ export default {
   type: 'document',
   fields: [
     {
-      name: 'username',
-      title: 'Username',
+      name: 'name',
+      title: 'Name',
       type: 'string'
-    },
-    {
-      name: 'note',
-      title: 'Secret Note',
-      type: 'reference',
-      to: { type: 'note' }
     }
   ]
 }

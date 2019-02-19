@@ -4,27 +4,22 @@ import fetch from 'isomorphic-unfetch'
 import cookie from 'js-cookie'
 
 export default class extends React.Component {
+  // Start login flow, which eventually returns token and expiration date
   static async getInitialProps (ctx) {
-    let code = ctx.query.code
-    const response = await fetch('http://localhost:3000/auth/login.js', {
+    const url = 'http://localhost:3000/auth/login.js'
+    const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code })
+      body: JSON.stringify({ code: ctx.query.code })
     })
-    if (response.ok) {
-      const { token, image, expire } = await response.json()
-      return { token, image, expire }
-    } else {
-      // // https://github.com/developit/unfetch#caveats
-      // let error = new Error(response.statusText)
-      // error.response = response
-      // return Promise.reject(error)
-      return {}
-    }
+
+    const { token, expires } = await response.json()
+    return { token, expires }
   }
   componentDidMount () {
-    // TODO: Maybe better to set cookie on elsewhere
-    const expires = new Date(this.props.expire)
+    // Store the token in a cookie
+    // and return back to homepage.
+    const expires = new Date(this.props.expires)
     cookie.set('token', this.props.token, { expires })
     Router.push('/')
   }

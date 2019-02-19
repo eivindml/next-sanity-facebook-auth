@@ -1,12 +1,7 @@
 {
   "version": 2,
   "name": "next-sanity-facebook-auth",
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "regions": [
-    "bru"
-  ],
+  "env": { "NODE_ENV": "production" },
   "builds": [
     { "src": "www/package.json", "use": "@now/next" },
     { "src": "auth/*.js", "use": "@now/node" }

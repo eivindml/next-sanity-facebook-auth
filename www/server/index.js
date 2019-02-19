@@ -3,9 +3,8 @@ const { parse } = require('url')
 const httpProxy = require('http-proxy')
 const { createServer } = require('http')
 
-// TODO: Go through this and clean up and understand
-// TODO: Can we use micro instead of http?
-// TODO: What does a proxy do?
+// Server which handles all routing. Proxies
+// requests to auth backend or to next.js frontend.
 
 const app = next({ dev: process.env.NODE_ENV !== 'production' })
 const handle = app.getRequestHandler()
@@ -25,8 +24,10 @@ app.prepare()
           app.render(req, res, '/login', query)
           break
         case '/auth/login.js':
-          proxy.web(req, res, { target: 'http://localhost:3001' }, error =>
-            console.log('Error!', error)
+          proxy.web(
+            req, res,
+            { target: 'http://localhost:3001' },
+            error => console.log('Error!', error)
           )
           break
         default:
