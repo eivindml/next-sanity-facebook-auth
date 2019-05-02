@@ -9,7 +9,7 @@ module.exports = {
   '_type': 'system.group',
   'grants': [
     {
-      'filter': '_type == "user" && _id == $identity',
+      'filter': '_type == "user" && _id == identity()',
       'permissions': ['read', 'update', 'create']
     }
   ],
